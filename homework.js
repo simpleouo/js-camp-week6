@@ -27,6 +27,10 @@ async function getProducts() {
 	// 1. 使用 fetch() 發送 GET 請求
 	// 2. 使用 response.json() 解析回應
 	// 3. 回傳 data.products
+	const url = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/products`;
+	const res = await fetch(url);
+	const data = await res.json();
+	return data.products;
 }
 
 /**
@@ -35,6 +39,10 @@ async function getProducts() {
  */
 async function getCart() {
 	// 請實作此函式
+	const url = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
+	const res = await fetch(url);
+	const data = await res.json();
+	return data;
 }
 
 /**
@@ -48,6 +56,17 @@ async function getProductsSafe() {
 	// 2. 檢查 response.ok 判斷是否成功
 	// 3. 成功回傳 { success: true, data: [...] }
 	// 4. 失敗回傳 { success: false, error: '錯誤訊息' }
+	const url = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/products`;
+	try {
+		const res = await fetch(url);
+		if (!res.ok) {
+			throw new Error(`錯誤狀態： ${res.status}`);
+		}
+		const data = await res.json();
+		return { success: true, data: data.products };
+	} catch (err) {
+		return { success: false, error: err.message };
+	}
 }
 
 // ========================================
@@ -67,6 +86,23 @@ async function addToCart(productId, quantity) {
 	// 2. body 格式：{ data: { productId: "xxx", quantity: 1 } }
 	// 3. 記得設定 headers: { 'Content-Type': 'application/json' }
 	// 4. body 要用 JSON.stringify() 轉換
+	const url = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
+	const headers = {
+		"Content-Type": "application/json",
+	};
+	const body = JSON.stringify({
+		data: {
+			productId,
+			quantity,
+		},
+	});
+	const res = await fetch(url, {
+		method: "POST",
+		headers,
+		body
+	});
+	const data = await res.json();
+	return data;
 }
 
 /**
@@ -80,6 +116,23 @@ async function updateCartItem(cartId, quantity) {
 	// 提示：
 	// 1. 發送 PATCH 請求
 	// 2. body 格式：{ data: { id: "購物車ID", quantity: 數量 } }
+	const url = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
+	const headers = {
+		"Content-Type": "application/json",
+	};
+	const body = JSON.stringify({
+		data: {
+			id: cartId,
+			quantity,
+		},
+	});
+	const res = await fetch(url, {
+		method: "PATCH",
+		headers,
+		body
+	});
+	const data = await res.json();
+	return data;
 }
 
 /**
@@ -90,6 +143,12 @@ async function updateCartItem(cartId, quantity) {
 async function removeCartItem(cartId) {
 	// 請實作此函式
 	// 提示：發送 DELETE 請求到 /carts/{id}
+	const url = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts/${cartId}`;
+	const res = await fetch(url, {
+		method: "DELETE",
+	});
+	const data = await res.json();
+	return data;
 }
 
 /**
@@ -99,6 +158,12 @@ async function removeCartItem(cartId) {
 async function clearCart() {
 	// 請實作此函式
 	// 提示：發送 DELETE 請求到 /carts
+	const url = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
+	const res = await fetch(url, {
+		method: "DELETE",
+	});
+	const data = await res.json();
+	return data;
 }
 
 // ========================================
@@ -110,12 +175,24 @@ async function clearCart() {
 
 1. HTTP 狀態碼的分類（1xx, 2xx, 3xx, 4xx, 5xx 各代表什麼）
    答：
+   1xx：資訊回應
+   2xx：成功
+   3xx：重定向
+   4xx：客戶端錯誤
+   5xx：伺服器錯誤
 
 2. GET、POST、PATCH、PUT、DELETE 的差異
    答：
+   GET：用於取得資源，不會修改伺服器資料
+   POST：用於建立資源，會修改伺服器資料
+   PATCH：用於部分更新資源，會修改伺服器資料
+   PUT：用於完全替換資源，會修改伺服器資料
+   DELETE：用於刪除資源，會修改伺服器資料
 
 3. 什麼是 RESTful API？
    答：
+   RESTful API 是一種設計風格，強調使用 HTTP 方法（GET, POST, PATCH, DELETE）來操作資源，並且資源以 URL 表示。
+   具有無狀態（Stateless）、統一介面接口、前後端分離的特性、可緩存等原則，是現代 Web 服務溝通的主流標準，能提升系統的擴展性與維護性。
 
 
 */
