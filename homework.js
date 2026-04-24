@@ -42,7 +42,12 @@ async function getCart() {
 	const url = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
 	const res = await fetch(url);
 	const data = await res.json();
-	return data;
+	const cartData = {
+		carts: data.carts,
+		total: data.total,
+		finalTotal: data.finalTotal,
+	};
+	return cartData;
 }
 
 /**
